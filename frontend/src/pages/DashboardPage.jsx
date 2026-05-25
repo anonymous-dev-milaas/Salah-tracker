@@ -9,11 +9,12 @@ const PRAYER_ORDER = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha']
 
 function getGreeting() {
   const h = new Date().getHours()
-  if (h < 5) return 'Good Night'
-  if (h < 12) return 'Good Morning'
-  if (h < 17) return 'Good Afternoon'
-  if (h < 21) return 'Good Evening'
-  return 'Good Night'
+  const greeting =
+    h < 5  ? 'Good Evening' :
+    h < 12 ? 'Good Morning' :
+    h < 17 ? 'Good Afternoon' : 'Good Evening'
+
+  return `${greeting}, السلام عليكم!`
 }
 
 function formatDate(d = new Date()) {

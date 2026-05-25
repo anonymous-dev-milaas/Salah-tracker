@@ -4,16 +4,24 @@ import { LogOut, Bell, BellOff, User, MapPin } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import api from '../api/axios'
 import useAuthStore from '../store/authStore'
+import usePreferencesStore from '../store/preferencesStore'
+import { LANGUAGES, getTranslator } from '../i18n'
 
 export default function ProfilePage() {
   const { user, logout, updateUser } = useAuthStore()
+  const { language, setLanguage } = usePreferencesStore()
+  const t = getTranslator(language)
   const navigate = useNavigate()
   const [notifEnabled, setNotifEnabled] = useState(Notification.permission === 'granted')
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({ city: user?.city || '', username: user?.username || '' })
 
   const handleLogout = async () => {
-    try { await api.post('/auth/logout/', { refresh: localStorage.getItem('refresh_token') }) } catch {}
+    try {
+      await api.post('/auth/logout/', { refresh: localStorage.getItem('refresh_token') })
+    } catch {
+      // Continue local logout even if the server session is already gone.
+    }
     logout()
     navigate('/login', { replace: true })
   }
@@ -36,7 +44,7 @@ export default function ProfilePage() {
       const perm = await Notification.requestPermission()
       if (perm === 'granted') {
         setNotifEnabled(true)
-        new Notification('Salah Tracker', { body: 'Prayer reminders enabled! 🕌', icon: '/icon-192.png' })
+        new Notification('Salah Tracker', { body: 'Prayer reminders enabled!', icon: '/icon-192.png' })
       }
     } else {
       setNotifEnabled(false)
@@ -46,7 +54,7 @@ export default function ProfilePage() {
   return (
     <div className="px-4 pt-12 pb-6 space-y-5">
       <motion.h1 initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-2xl font-bold text-slate-100">
-        Profile
+        {t('profile')}
       </motion.h1>
 
       {/* Avatar */}
@@ -66,10 +74,10 @@ export default function ProfilePage() {
 
       {/* Edit form */}
       <div className="glass rounded-2xl p-4 space-y-3">
-        <h3 className="font-semibold text-slate-200">Edit Profile</h3>
+        <h3 className="font-semibold text-slate-200">{t('editProfile')}</h3>
         {[
-          { label: 'Display Name', key: 'username', type: 'text' },
-          { label: 'City', key: 'city', type: 'text' },
+          { label: t('displayName'), key: 'username', type: 'text' },
+          { label: t('city'), key: 'city', type: 'text' },
         ].map(({ label, key, type }) => (
           <div key={key}>
             <label className="text-slate-400 text-xs mb-1 block">{label}</label>
@@ -80,8 +88,31 @@ export default function ProfilePage() {
         ))}
         <button onClick={handleSave} disabled={saving}
           className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-white font-semibold rounded-xl transition-colors disabled:opacity-50">
-          {saving ? 'Saving…' : 'Save Changes'}
+          {saving ? t('saving') : t('saveChanges')}
         </button>
+      </div>
+
+      <div className="glass rounded-2xl p-4 space-y-3">
+        <h3 className="font-semibold text-slate-200">{t('language')}</h3>
+        <div className="grid grid-cols-2 gap-2">
+          {LANGUAGES.map(({ code, label }) => {
+            const active = language === code
+            return (
+              <button
+                key={code}
+                type="button"
+                onClick={() => setLanguage(code)}
+                className={`rounded-xl border px-3 py-2.5 text-sm font-semibold transition-all ${
+                  active
+                    ? 'border-emerald-300/50 bg-emerald-400/20 text-emerald-200 ring-1 ring-emerald-300/30'
+                    : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/20 hover:text-slate-200'
+                }`}
+              >
+                {label}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       {/* Notifications toggle */}
@@ -90,8 +121,8 @@ export default function ProfilePage() {
         <div className="flex items-center gap-3">
           {notifEnabled ? <Bell size={20} className="text-emerald-400" /> : <BellOff size={20} className="text-slate-500" />}
           <div className="text-left">
-            <p className="font-medium text-slate-200">Prayer Reminders</p>
-            <p className="text-xs text-slate-500">{notifEnabled ? 'Notifications enabled' : 'Tap to enable notifications'}</p>
+            <p className="font-medium text-slate-200">{t('prayerReminders')}</p>
+            <p className="text-xs text-slate-500">{notifEnabled ? t('notificationsEnabled') : t('enableNotifications')}</p>
           </div>
         </div>
         <div className={`w-10 h-5 rounded-full transition-colors duration-200 ${notifEnabled ? 'bg-emerald-500' : 'bg-slate-700'} flex items-center px-0.5`}>
@@ -103,7 +134,7 @@ export default function ProfilePage() {
       <button onClick={handleLogout}
         className="w-full glass rounded-2xl p-4 flex items-center justify-center gap-2 text-rose-400 border border-rose-400/20 hover:bg-rose-400/10 transition-colors">
         <LogOut size={18} />
-        <span className="font-semibold">Log Out</span>
+        <span className="font-semibold">{t('logOut')}</span>
       </button>
     </div>
   )

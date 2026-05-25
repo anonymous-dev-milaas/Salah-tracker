@@ -12,7 +12,9 @@ const useAuthStore = create((set) => ({
   },
 
   logout: () => {
+    const language = localStorage.getItem('language')
     localStorage.clear()
+    if (language) localStorage.setItem('language', language)
     set({ user: null, isAuthenticated: false })
   },
 

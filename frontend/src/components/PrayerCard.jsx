@@ -1,61 +1,145 @@
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle2, Clock, XCircle, Circle } from 'lucide-react'
+import usePreferencesStore from '../store/preferencesStore'
+import { getTranslator } from '../i18n'
 
 const STATUS_CONFIG = {
-  ontime:  { label: 'On Time', color: 'text-emerald-400', bg: 'bg-emerald-400/10', border: 'border-emerald-400/30', icon: CheckCircle2, glow: 'glow-green' },
-  qada:    { label: 'Qada',    color: 'text-amber-400',   bg: 'bg-amber-400/10',   border: 'border-amber-400/30',   icon: Clock,        glow: 'glow-amber' },
-  missed:  { label: 'Missed',  color: 'text-rose-400',    bg: 'bg-rose-400/10',    border: 'border-rose-400/30',    icon: XCircle,      glow: 'glow-red'   },
-  pending: { label: 'Pending', color: 'text-slate-400',   bg: 'bg-slate-400/10',   border: 'border-slate-400/30',   icon: Circle,       glow: ''           },
+  ontime: {
+    labelKey: 'onTime',
+    color: 'text-emerald-300',
+    icon: CheckCircle2,
+    cardClass: 'card-ontime',
+    iconBg: 'bg-emerald-400/15',
+    btnActive: 'bg-emerald-400/25 text-emerald-300 border-emerald-400/50 ring-1 ring-emerald-400/40',
+  },
+  qada: {
+    labelKey: 'qada',
+    color: 'text-amber-300',
+    icon: Clock,
+    cardClass: 'card-qada',
+    iconBg: 'bg-amber-400/15',
+    btnActive: 'bg-amber-400/25 text-amber-300 border-amber-400/50 ring-1 ring-amber-400/40',
+  },
+  missed: {
+    labelKey: 'missed',
+    color: 'text-rose-300',
+    icon: XCircle,
+    cardClass: 'card-missed',
+    iconBg: 'bg-rose-400/15',
+    btnActive: 'bg-rose-400/25 text-rose-300 border-rose-400/50 ring-1 ring-rose-400/40',
+  },
+  pending: {
+    labelKey: 'pending',
+    color: 'text-slate-500',
+    icon: Circle,
+    cardClass: 'card-pending',
+    iconBg: 'bg-slate-700/50',
+    btnActive: '',
+  },
 }
 
 const PRAYER_ARABIC = {
-  fajr: 'الفجر', dhuhr: 'الظهر', asr: 'العصر', maghrib: 'المغرب', isha: 'العشاء'
+  fajr: 'الفجر',
+  dhuhr: 'الظهر',
+  asr: 'العصر',
+  maghrib: 'المغرب',
+  isha: 'العشاء',
+}
+
+const PRAYER_MALAYALAM = {
+  fajr: 'സുബ്ഹി',
+  dhuhr: 'ളുഹർ',
+  asr: 'അസർ',
+  maghrib: 'മഗ്‌രിബ്',
+  isha: 'ഇശാ',
 }
 
 const ACTIONS = [
-  { status: 'ontime', label: '✓ On Time', color: 'bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-300 border-emerald-500/30' },
-  { status: 'qada',   label: '↺ Qada',   color: 'bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border-amber-500/30'   },
-  { status: 'missed', label: '✕ Missed', color: 'bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 border-rose-500/30'     },
+  {
+    status: 'ontime',
+    labelKey: 'onTime',
+    base: 'bg-emerald-400/10 hover:bg-emerald-400/20 text-emerald-400 border-emerald-400/20',
+  },
+  {
+    status: 'qada',
+    labelKey: 'qada',
+    base: 'bg-amber-400/10 hover:bg-amber-400/20 text-amber-400 border-amber-400/20',
+  },
+  {
+    status: 'missed',
+    labelKey: 'missed',
+    base: 'bg-rose-400/10 hover:bg-rose-400/20 text-rose-400 border-rose-400/20',
+  },
 ]
 
-export default function PrayerCard({ prayer, time, status, onMark, index }) {
+export default function PrayerCard({ prayer, time, status, onMark, index, isNext }) {
+  const { language } = usePreferencesStore()
+  const t = getTranslator(language)
   const config = STATUS_CONFIG[status] || STATUS_CONFIG.pending
   const Icon = config.icon
+  const prayerLabel = language === 'ml' ? PRAYER_MALAYALAM[prayer] : PRAYER_ARABIC[prayer]
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      layout
+      initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.08, duration: 0.4 }}
-      className={`glass rounded-2xl p-4 border ${config.border} ${config.glow} transition-all duration-300`}
+      transition={{ delay: index * 0.07, duration: 0.4, ease: 'easeOut' }}
+      className={`relative rounded-2xl p-4 transition-all duration-500 ${config.cardClass} ${isNext ? 'ring-1 ring-emerald-400/30' : ''}`}
     >
-      <div className="flex items-center justify-between mb-3">
+      <AnimatePresence>
+        {isNext && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="absolute -top-2.5 left-4 bg-emerald-500 text-white text-xs font-bold px-2.5 py-0.5 rounded-full"
+          >
+            Next Prayer
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-xl ${config.bg} flex items-center justify-center`}>
-            <Icon size={20} className={config.color} strokeWidth={1.5} />
+          <div className={`w-11 h-11 rounded-2xl ${config.iconBg} flex items-center justify-center transition-all duration-500`}>
+            <Icon size={22} className={config.color} strokeWidth={1.8} />
           </div>
+
           <div>
             <p className="font-semibold text-slate-100 capitalize text-base leading-tight">{prayer}</p>
-            <p className="font-arabic text-slate-400 text-sm">{PRAYER_ARABIC[prayer]}</p>
+            <p className={`text-slate-500 text-sm ${language === 'ml' ? '' : 'font-arabic'}`}>{prayerLabel}</p>
           </div>
         </div>
+
         <div className="text-right">
-          <p className="text-slate-200 font-medium text-sm">{time || '—'}</p>
-          <span className={`text-xs font-medium ${config.color}`}>{config.label}</span>
+          <p className="text-slate-300 font-semibold text-sm">{time || '-'}</p>
+          <motion.span
+            key={status}
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`text-xs font-semibold ${config.color}`}
+          >
+            {t(config.labelKey)}
+          </motion.span>
         </div>
       </div>
 
-      {/* Action buttons */}
-      <div className="flex gap-2 mt-3">
-        {ACTIONS.map((action) => (
-          <button
-            key={action.status}
-            onClick={() => onMark(prayer, action.status)}
-            className={`flex-1 py-1.5 rounded-xl text-xs font-semibold border transition-all duration-200 ${action.color} ${status === action.status ? 'ring-1 ring-offset-1 ring-offset-card ring-current' : ''}`}
-          >
-            {action.label}
-          </button>
-        ))}
+      <div className="flex gap-2">
+        {ACTIONS.map((action) => {
+          const isActive = status === action.status
+          return (
+            <motion.button
+              key={action.status}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => onMark(prayer, action.status)}
+              className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all duration-200
+                ${isActive ? config.btnActive : action.base}`}
+            >
+              {t(action.labelKey)}
+            </motion.button>
+          )
+        })}
       </div>
     </motion.div>
   )
