@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { CheckCircle2, Clock, XCircle, Circle } from 'lucide-react'
+import { BookOpen, CheckCircle2, Clock, XCircle, Circle } from 'lucide-react'
 import usePreferencesStore from '../store/preferencesStore'
 import { getTranslator } from '../i18n'
 
@@ -123,6 +123,11 @@ export default function PrayerCard({ prayer, time, status, onMark, index, isNext
             {t(config.labelKey)}
           </motion.span>
         </div>
+      </div>
+
+      <div className="mb-3 flex items-center gap-2 rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-3 py-2 text-cyan-100/80">
+        <BookOpen size={14} className="shrink-0 text-cyan-300" />
+        <span className="truncate text-[11px] font-semibold">{t('ayatulKursiBonus')}</span>
       </div>
 
       <div className="flex gap-2">

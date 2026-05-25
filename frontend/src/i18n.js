@@ -29,6 +29,7 @@ export const translations = {
     prayerReminders: 'Prayer Reminders',
     notificationsEnabled: 'Notifications enabled',
     enableNotifications: 'Tap to enable notifications',
+    ayatulKursiBonus: 'Bonus: Recite Ayatul Kursi after salah',
     logOut: 'Log Out',
   },
   ml: {
@@ -56,6 +57,7 @@ export const translations = {
     prayerReminders: 'നമസ്കാര ഓർമ്മപ്പെടുത്തൽ',
     notificationsEnabled: 'നോട്ടിഫിക്കേഷൻ ഓണാണ്',
     enableNotifications: 'നോട്ടിഫിക്കേഷൻ ഓൺ ചെയ്യാൻ ടാപ്പ് ചെയ്യുക',
+    ayatulKursiBonus: 'ബോണസ്: നമസ്കാരത്തിനു ശേഷം ആയത്തുൽ കുർസി ഓതുക',
     logOut: 'ലോഗ് ഔട്ട്',
   },
 }
