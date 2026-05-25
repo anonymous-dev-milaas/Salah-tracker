@@ -7,6 +7,10 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from django.contrib.auth import get_user_model, authenticate
 from .serializers import RegisterSerializer, UserSerializer
 
+
+from django.core.mail import send_mail
+from .models import PasswordResetOTP
+
 User = get_user_model()
 
 @api_view(['POST'])
@@ -58,3 +62,88 @@ def logout(request):
     except Exception:
         pass
     return Response({'message': 'Logged out successfully'})
+
+
+
+
+
+
+
+from django.core.mail import send_mail
+from .models import PasswordResetOTP
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def forgot_password(request):
+    email = request.data.get('email')
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        # Don't reveal if email exists or not
+        return Response({'message': 'If this email exists, an OTP has been sent.'})
+
+    # Delete old OTPs for this user
+    PasswordResetOTP.objects.filter(user=user).delete()
+
+    # Generate and save new OTP
+    otp = PasswordResetOTP.generate_otp()
+    PasswordResetOTP.objects.create(user=user, otp=otp)
+
+    # Send email
+    send_mail(
+        subject='Your Salah Tracker Password Reset OTP',
+        message=f'Your OTP is: {otp}\n\nThis OTP expires in 10 minutes.\n\nIf you did not request this, ignore this email.',
+        from_email=None,
+        recipient_list=[email],
+        fail_silently=False,
+    )
+
+    return Response({'message': 'If this email exists, an OTP has been sent.'})
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def verify_otp(request):
+    email = request.data.get('email')
+    otp = request.data.get('otp')
+
+    try:
+        user = User.objects.get(email=email)
+        otp_obj = PasswordResetOTP.objects.filter(
+            user=user, otp=otp, is_used=False
+        ).latest('created_at')
+    except (User.DoesNotExist, PasswordResetOTP.DoesNotExist):
+        return Response({'error': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not otp_obj.is_valid():
+        return Response({'error': 'OTP has expired'}, status=status.HTTP_400_BAD_REQUEST)
+
+    return Response({'message': 'OTP verified', 'valid': True})
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def reset_password(request):
+    email = request.data.get('email')
+    otp = request.data.get('otp')
+    new_password = request.data.get('new_password')
+
+    if not new_password or len(new_password) < 8:
+        return Response({'error': 'Password must be at least 8 characters'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        user = User.objects.get(email=email)
+        otp_obj = PasswordResetOTP.objects.filter(
+            user=user, otp=otp, is_used=False
+        ).latest('created_at')
+    except (User.DoesNotExist, PasswordResetOTP.DoesNotExist):
+        return Response({'error': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not otp_obj.is_valid():
+        return Response({'error': 'OTP has expired'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Mark OTP as used and change password
+    otp_obj.is_used = True
+    otp_obj.save()
+    user.set_password(new_password)
+    user.save()
+
+    return Response({'message': 'Password reset successful'})

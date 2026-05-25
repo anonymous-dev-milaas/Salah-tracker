@@ -10,11 +10,11 @@
 html, body {
   margin: 0;
   padding: 0;
-  background: #0F172A;
+  background: #080d18;
   color: #F1F5F9;
   font-family: 'Outfit', sans-serif;
   overflow-x: hidden;
-  height: 100%;
+  min-height: 100%;
   width: 100%;
 }
 
@@ -24,16 +24,51 @@ html, body {
 }
 
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #0F172A; }
-::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+::-webkit-scrollbar-track { background: #080d18; }
+::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 2px; }
 
+/* Glass utility */
 .glass {
-  background: rgba(30, 41, 59, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(51, 65, 85, 0.5);
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.glow-green { box-shadow: 0 0 20px rgba(16, 185, 129, 0.15); }
-.glow-amber { box-shadow: 0 0 20px rgba(245, 158, 11, 0.15); }
-.glow-red   { box-shadow: 0 0 20px rgba(244, 63, 94, 0.15); }
+.glass-light {
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Card status gradients */
+.card-ontime {
+  background: linear-gradient(135deg, rgba(16,185,129,0.18) 0%, rgba(16,185,129,0.06) 100%);
+  border: 1px solid rgba(16,185,129,0.35);
+  backdrop-filter: blur(16px);
+}
+.card-qada {
+  background: linear-gradient(135deg, rgba(245,158,11,0.18) 0%, rgba(245,158,11,0.06) 100%);
+  border: 1px solid rgba(245,158,11,0.35);
+  backdrop-filter: blur(16px);
+}
+.card-missed {
+  background: linear-gradient(135deg, rgba(244,63,94,0.18) 0%, rgba(244,63,94,0.06) 100%);
+  border: 1px solid rgba(244,63,94,0.35);
+  backdrop-filter: blur(16px);
+}
+.card-pending {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(16px);
+}
+
+/* Page background gradient */
+.page-bg {
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(16,185,129,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(45,212,191,0.06) 0%, transparent 60%),
+    #080d18;
+  min-height: 100vh;
+}

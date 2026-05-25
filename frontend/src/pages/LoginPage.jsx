@@ -53,6 +53,14 @@ export default function LoginPage() {
             className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 mt-2">
             {loading ? 'Signing in…' : 'Sign In'}
           </button>
+
+          <p className="text-center text-slate-500 text-sm">
+  <Link to="/forgot-password" className="text-slate-400 hover:text-emerald-400 transition-colors">
+    Forgot password?
+  </Link>
+</p>
+
+
           <p className="text-center text-slate-500 text-sm">
             Don't have an account?{' '}
             <Link to="/register" className="text-emerald-400 hover:text-emerald-300 font-medium">Register</Link>

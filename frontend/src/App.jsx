@@ -8,6 +8,8 @@ import CalendarPage from './pages/CalendarPage'
 import StatsPage from './pages/StatsPage'
 import ProfilePage from './pages/ProfilePage'
 
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
+
 const PrivateRoute = ({ children }) => {
   const { isAuthenticated } = useAuthStore()
   return isAuthenticated ? children : <Navigate to="/login" replace />
@@ -25,6 +27,9 @@ export default function App() {
         <Route path="profile" element={<ProfilePage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
+
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
     </Routes>
   )
 }
