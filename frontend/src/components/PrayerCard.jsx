@@ -14,40 +14,40 @@ import { to12hr } from '../utils/timeFormat'
 const STATUS_CONFIG = {
   ontime: {
     labelKey: 'onTime',
-    color: 'text-emerald-300',
+    color: 'text-emerald-200',
     icon: CheckCircle2,
     cardClass: 'card-ontime',
-    iconBg: 'bg-emerald-400/15',
+    iconBg: 'bg-emerald-400/18',
     btnActive:
-      'bg-emerald-400/25 text-emerald-300 border-emerald-400/50 ring-1 ring-emerald-400/40',
+      'bg-emerald-400/30 text-emerald-200 border-emerald-400/60 ring-1 ring-emerald-400/50',
   },
 
   qada: {
     labelKey: 'qada',
-    color: 'text-amber-300',
+    color: 'text-amber-200',
     icon: Clock,
     cardClass: 'card-qada',
-    iconBg: 'bg-amber-400/15',
+    iconBg: 'bg-amber-400/18',
     btnActive:
-      'bg-amber-400/25 text-amber-300 border-amber-400/50 ring-1 ring-amber-400/40',
+      'bg-amber-400/30 text-amber-200 border-amber-400/60 ring-1 ring-amber-400/50',
   },
 
   missed: {
     labelKey: 'missed',
-    color: 'text-rose-300',
+    color: 'text-rose-200',
     icon: XCircle,
     cardClass: 'card-missed',
-    iconBg: 'bg-rose-400/15',
+    iconBg: 'bg-rose-400/18',
     btnActive:
-      'bg-rose-400/25 text-rose-300 border-rose-400/50 ring-1 ring-rose-400/40',
+      'bg-rose-400/30 text-rose-200 border-rose-400/60 ring-1 ring-rose-400/50',
   },
 
   pending: {
     labelKey: 'pending',
-    color: 'text-slate-500',
+    color: 'text-slate-400',
     icon: Circle,
     cardClass: 'card-pending',
-    iconBg: 'bg-slate-700/50',
+    iconBg: 'bg-slate-700/60',
     btnActive: '',
   },
 }
@@ -73,21 +73,21 @@ const ACTIONS = [
     status: 'ontime',
     labelKey: 'onTime',
     base:
-      'bg-emerald-400/10 hover:bg-emerald-400/20 text-emerald-400 border-emerald-400/20',
+      'bg-emerald-400/12 hover:bg-emerald-400/20 text-emerald-300 border-emerald-400/30',
   },
 
   {
     status: 'qada',
     labelKey: 'qada',
     base:
-      'bg-amber-400/10 hover:bg-amber-400/20 text-amber-400 border-amber-400/20',
+      'bg-amber-400/12 hover:bg-amber-400/20 text-amber-300 border-amber-400/30',
   },
 
   {
     status: 'missed',
     labelKey: 'missed',
     base:
-      'bg-rose-400/10 hover:bg-rose-400/20 text-rose-400 border-rose-400/20',
+      'bg-rose-400/12 hover:bg-rose-400/20 text-rose-300 border-rose-400/30',
   },
 ]
 
@@ -127,14 +127,14 @@ export default function PrayerCard({
       }}
       className={`
         relative
-        rounded-2xl
-        p-4
+        rounded-3xl
+        p-5
         transition-all
         duration-500
         ${config.cardClass}
         ${
           isNext
-            ? 'ring-1 ring-emerald-400/30'
+            ? 'ring-1 ring-emerald-400/40'
             : ''
         }
       `}
@@ -157,13 +157,13 @@ export default function PrayerCard({
             className="
               absolute
               -top-2.5
-              left-4
+              left-5
               bg-emerald-500
               text-white
               text-xs
               font-bold
-              px-2.5
-              py-0.5
+              px-3
+              py-1
               rounded-full
             "
           >
@@ -172,14 +172,14 @@ export default function PrayerCard({
         )}
       </AnimatePresence>
 
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-5">
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
 
           <div
             className={`
-              w-11
-              h-11
+              w-14
+              h-14
               rounded-2xl
               ${config.iconBg}
               flex
@@ -190,19 +190,19 @@ export default function PrayerCard({
             `}
           >
             <Icon
-              size={22}
+              size={26}
               className={config.color}
               strokeWidth={1.8}
             />
           </div>
 
           <div>
-            <p className="font-semibold text-slate-100 capitalize text-base leading-tight">
+            <p className="font-bold text-slate-100 capitalize text-2xl leading-tight">
               {prayer}
             </p>
 
             <p
-              className={`text-slate-500 text-sm ${
+              className={`text-slate-400 text-base ${
                 language === 'ml'
                   ? ''
                   : 'font-arabic'
@@ -216,7 +216,7 @@ export default function PrayerCard({
 
         <div className="text-right">
 
-          <p className="text-slate-300 font-semibold text-sm">
+          <p className="text-slate-200 font-bold text-xl">
             {to12hr(time)}
           </p>
 
@@ -230,7 +230,7 @@ export default function PrayerCard({
               opacity: 1,
               y: 0,
             }}
-            className={`text-xs font-semibold ${config.color}`}
+            className={`text-sm font-semibold ${config.color}`}
           >
             {t(config.labelKey)}
           </motion.span>
@@ -242,28 +242,28 @@ export default function PrayerCard({
       {/* Ayatul Kursi */}
       <div
         className="
-          mb-3
+          mb-4
           flex
           items-center
-          gap-2
-          rounded-xl
+          gap-3
+          rounded-2xl
           border
           border-cyan-300/20
           bg-cyan-300/10
-          px-3
-          py-2
-          text-cyan-100/80
+          px-4
+          py-3
+          text-cyan-100/90
         "
       >
         <BookOpen
-          size={14}
+          size={16}
           className="
             shrink-0
             text-cyan-300
           "
         />
 
-        <span className="truncate text-[11px] font-semibold">
+        <span className="truncate text-sm font-semibold">
           {language === 'ml'
             ? 'ആയത്തുൽ കുർസി ഓതുക'
             : t('ayatulKursiBonus')}
@@ -271,7 +271,7 @@ export default function PrayerCard({
       </div>
 
       {/* Buttons */}
-      <div className="flex gap-2">
+      <div className="flex gap-3">
 
         {ACTIONS.map((action) => {
           const isActive =
@@ -280,7 +280,7 @@ export default function PrayerCard({
           return (
             <motion.button
               key={action.status}
-              whileTap={{ scale: 0.95 }}
+              whileTap={{ scale: 0.96 }}
               onClick={() =>
                 onMark(
                   prayer,
@@ -289,10 +289,10 @@ export default function PrayerCard({
               }
               className={`
                 flex-1
-                py-2
-                rounded-xl
-                text-xs
-                font-semibold
+                py-3
+                rounded-2xl
+                text-sm
+                font-bold
                 border
                 transition-all
                 duration-200
