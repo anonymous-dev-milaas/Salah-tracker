@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
 from django.contrib.auth import get_user_model, authenticate
+
+from backend.config import settings
 from .serializers import RegisterSerializer, UserSerializer
 
 
@@ -88,6 +90,12 @@ def forgot_password(request):
     otp = PasswordResetOTP.generate_otp()
     PasswordResetOTP.objects.create(user=user, otp=otp)
 
+    from django.conf import settings
+
+    print("HOST:", settings.EMAIL_HOST)
+    print("PORT:", settings.EMAIL_PORT)
+    print("TLS:", settings.EMAIL_USE_TLS)
+
     # Send email
     try:
      send_mail(
@@ -98,9 +106,11 @@ def forgot_password(request):
         fail_silently=False,
     )
     except Exception as e:
+        import traceback
+        print(traceback.format_exc())
         return Response(
-           {'error': str(e)},
-           status=500
+            {'error': str(e)},
+            status=500
     )
 
     return Response({'message': 'If this email exists, an OTP has been sent.'})
