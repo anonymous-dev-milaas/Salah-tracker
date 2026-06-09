@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model, authenticate
 from .serializers import RegisterSerializer, UserSerializer
 
 
+
 from django.core.mail import send_mail
 from .models import PasswordResetOTP
 
@@ -69,8 +70,6 @@ def logout(request):
 
 
 
-from django.core.mail import send_mail
-from .models import PasswordResetOTP
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -90,12 +89,18 @@ def forgot_password(request):
     PasswordResetOTP.objects.create(user=user, otp=otp)
 
     # Send email
-    send_mail(
+    try:
+     send_mail(
         subject='Your Salah Tracker Password Reset OTP',
-        message=f'Your OTP is: {otp}\n\nThis OTP expires in 10 minutes.\n\nIf you did not request this, ignore this email.',
+        message=f'Your OTP is: {otp}\n\nThis OTP expires in 10 minutes.',
         from_email=None,
         recipient_list=[email],
         fail_silently=False,
+    )
+    except Exception as e:
+        return Response(
+           {'error': str(e)},
+           status=500
     )
 
     return Response({'message': 'If this email exists, an OTP has been sent.'})
