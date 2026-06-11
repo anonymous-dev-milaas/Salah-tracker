@@ -14,6 +14,10 @@ from .serializers import RegisterSerializer, UserSerializer
 from django.core.mail import send_mail
 from .models import PasswordResetOTP
 
+import socket
+
+
+
 User = get_user_model()
 
 @api_view(['POST'])
@@ -96,6 +100,12 @@ def forgot_password(request):
     print("PORT:", settings.EMAIL_PORT)
     print("TLS:", settings.EMAIL_USE_TLS)
 
+
+    try:
+        print(socket.gethostbyname("smtp.gmail.com"))
+    except Exception as e:
+        print("DNS ERROR:", e)
+        
     # Send email
     try:
      send_mail(
