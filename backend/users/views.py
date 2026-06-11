@@ -3,19 +3,12 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import TokenRefreshView
 from django.contrib.auth import get_user_model, authenticate
 
 from django.conf import settings
 from .serializers import RegisterSerializer, UserSerializer
 
-
-
-from django.core.mail import send_mail
 from .models import PasswordResetOTP
-
-import socket
-
 import requests
 
 
@@ -73,11 +66,6 @@ def logout(request):
 
 
 
-
-
-
-
-
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def forgot_password(request):
@@ -95,58 +83,42 @@ def forgot_password(request):
     otp = PasswordResetOTP.generate_otp()
     PasswordResetOTP.objects.create(user=user, otp=otp)
 
-    from django.conf import settings
-
-    print("HOST:", settings.EMAIL_HOST)
-    print("PORT:", settings.EMAIL_PORT)
-    print("TLS:", settings.EMAIL_USE_TLS)
-
-
     try:
-        print(socket.gethostbyname("smtp.gmail.com"))
-    except Exception as e:
-        print("DNS ERROR:", e)
+        response = requests.post(
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {settings.RESEND_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "from": "onboarding@resend.dev",
+                "to": [email],
+                "subject": "Your Salah Tracker Password Reset OTP",
+                "html": f"""
+                <h2>Salah Tracker Password Reset</h2>
+                <p>Your OTP is:</p>
+                <h1>{otp}</h1>
+                <p>This OTP expires in 10 minutes.</p>
+                """,
+            },
+            timeout=10,
+        )
 
-    # Send email
-    # try:
-    #  send_mail(
-    #     subject='Your Salah Tracker Password Reset OTP',
-    #     message=f'Your OTP is: {otp}\n\nThis OTP expires in 10 minutes.',
-    #     from_email=None,
-    #     recipient_list=[email],
-    #     fail_silently=False,
-    # )
-    # except Exception as e:
-    #     import traceback
-    #     print(traceback.format_exc())
-    #     return Response(
-    #         {'error': str(e)},
-    #         status=500
-    # )
+        print("RESEND STATUS:", response.status_code)
+        print("RESEND RESPONSE:", response.text)
 
-    # return Response({'message': 'If this email exists, an OTP has been sent.'})
-    
-    response = requests.post(
-        "https://api.resend.com/emails",
-        headers={
-            "Authorization": f"Bearer {settings.RESEND_API_KEY}",
-            "Content-Type": "application/json",
-        },
-        json={
-            "from": "onboarding@resend.dev",
-            "to": [email],
-            "subject": "Your Salah Tracker Password Reset OTP",
-            "html": f"""
-            <h2>Salah Tracker Password Reset</h2>
-            <p>Your OTP is:</p>
-            <h1>{otp}</h1>
-            <p>This OTP expires in 10 minutes.</p>
-            """,
-        },
-    )
+        if response.status_code not in [200, 201]:
+            return Response(
+                {'error': 'Failed to send OTP email'},
+                status=500
+            )
 
-    print("RESEND STATUS:", response.status_code)
-    print("RESEND RESPONSE:", response.text)
+    except requests.RequestException as e:
+        print("RESEND ERROR:", str(e))
+        return Response(
+            {'error': 'Failed to send OTP email'},
+            status=500
+        )
 
     return Response({'message': 'If this email exists, an OTP has been sent.'})
 
