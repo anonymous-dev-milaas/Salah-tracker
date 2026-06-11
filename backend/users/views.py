@@ -16,6 +16,7 @@ from .models import PasswordResetOTP
 
 import socket
 
+import requests
 
 
 User = get_user_model()
@@ -124,8 +125,28 @@ def forgot_password(request):
     # )
 
     # return Response({'message': 'If this email exists, an OTP has been sent.'})
-    # TEMPORARY TEST
-    print(f"OTP FOR {email}: {otp}")
+    
+    response = requests.post(
+        "https://api.resend.com/emails",
+        headers={
+            "Authorization": f"Bearer {settings.RESEND_API_KEY}",
+            "Content-Type": "application/json",
+        },
+        json={
+            "from": "onboarding@resend.dev",
+            "to": [email],
+            "subject": "Your Salah Tracker Password Reset OTP",
+            "html": f"""
+            <h2>Salah Tracker Password Reset</h2>
+            <p>Your OTP is:</p>
+            <h1>{otp}</h1>
+            <p>This OTP expires in 10 minutes.</p>
+            """,
+        },
+    )
+
+    print("RESEND STATUS:", response.status_code)
+    print("RESEND RESPONSE:", response.text)
 
     return Response({'message': 'If this email exists, an OTP has been sent.'})
 
