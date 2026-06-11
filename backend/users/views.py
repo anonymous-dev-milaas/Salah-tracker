@@ -6,7 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
 from django.contrib.auth import get_user_model, authenticate
 
-from backend.config import settings
+from django.conf import settings
 from .serializers import RegisterSerializer, UserSerializer
 
 
