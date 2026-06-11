@@ -105,25 +105,30 @@ def forgot_password(request):
         print(socket.gethostbyname("smtp.gmail.com"))
     except Exception as e:
         print("DNS ERROR:", e)
-        
+
     # Send email
-    try:
-     send_mail(
-        subject='Your Salah Tracker Password Reset OTP',
-        message=f'Your OTP is: {otp}\n\nThis OTP expires in 10 minutes.',
-        from_email=None,
-        recipient_list=[email],
-        fail_silently=False,
-    )
-    except Exception as e:
-        import traceback
-        print(traceback.format_exc())
-        return Response(
-            {'error': str(e)},
-            status=500
-    )
+    # try:
+    #  send_mail(
+    #     subject='Your Salah Tracker Password Reset OTP',
+    #     message=f'Your OTP is: {otp}\n\nThis OTP expires in 10 minutes.',
+    #     from_email=None,
+    #     recipient_list=[email],
+    #     fail_silently=False,
+    # )
+    # except Exception as e:
+    #     import traceback
+    #     print(traceback.format_exc())
+    #     return Response(
+    #         {'error': str(e)},
+    #         status=500
+    # )
+
+    # return Response({'message': 'If this email exists, an OTP has been sent.'})
+    # TEMPORARY TEST
+    print(f"OTP FOR {email}: {otp}")
 
     return Response({'message': 'If this email exists, an OTP has been sent.'})
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
